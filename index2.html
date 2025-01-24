@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Portfólio</title>
+    <link rel="stylesheet" href="css/styles_index2.css">
+    <script>
+        async function validateForm(event) {
+            event.preventDefault(); // Impede o envio do formulário
+
+            let valid = true;
+
+            // Limpar mensagens de erro e sucesso anteriores
+            document.querySelectorAll('.error').forEach(el => el.innerHTML = "");
+            document.getElementById('successMessage').textContent = "";
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (name.length < 3) {
+                document.getElementById("nameError").textContent = "O nome deve ter pelo menos 3 caracteres.";
+                valid = false;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                document.getElementById("emailError").textContent = "Por favor, insira um endereço de email válido.";
+                valid = false;
+            }
+
+            const phonePattern = /^\(\d{2}\) \d{5}-\d{4}$/;
+            if (!phonePattern.test(phone)) {
+                document.getElementById("phoneError").textContent = "Por favor, insira um número de telefone válido no formato (99) 99999-9999.";
+                valid = false;
+            }
+
+            if (message.length < 10) {
+                document.getElementById("messageError").textContent = "A mensagem deve ter pelo menos 10 caracteres.";
+                valid = false;
+            }
+
+            if (valid) {
+                const formData = new FormData(event.target);
+
+                const response = await fetch('routes/process.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    document.getElementById('successMessage').textContent = "Formulário enviado com sucesso!";
+                    document.getElementById('contactForm').reset();
+                } else {
+                    document.getElementById('successMessage').textContent = "Erro ao enviar o formulário.";
+                }
+            }
+        }
+        function mascaraTelefone(input) {
+            let phone = input.value.replace(/\D/g, ''); // Remove tudo que não for número
+            phone = phone.replace(/^(\d{2})(\d)/g, '($1) $2'); // Adiciona o parêntese após os dois primeiros números
+            phone = phone.replace(/(\d)(\d{4})$/, '$1-$2'); // Adiciona o hífen após o número
+            input.value = phone;
+        }
+
+        // Função para redefinir a mensagem de sucesso ao clicar em limpar
+        function resetSuccessMessage() {
+        document.getElementById('nameError').textContent = "";
+        document.getElementById('emailError').textContent = "";
+        document.getElementById('phoneError').textContent = "";
+        document.getElementById('messageError').textContent = "";
+        document.getElementById('successMessage').textContent = "";
+        }
+  
+        // Adicionar evento ao botão "Limpar"
+        document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('button[type="reset"]').addEventListener('click', resetSuccessMessage);
+        });
+    
+    </script>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <h1><a href="index.html">Meu Portfólio</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="#about">Sobre Mim</a></li>
+                    <li><a href="#projects">Projetos</a></li>
+                    <li><a href="#contact">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <section id="about" class="about-section">
+        <h2>Sobre Mim</h2>
+        <h3>Ana - Web Developer</h3>
+        <p>Como desenvolvedora web, minha missão é criar experiências digitais que sejam intuitivas, funcionais e
+            visualmente
+            atraentes. Minha jornada no desenvolvimento web começou com uma paixão pela tecnologia e a curiosidade de
+            entender como os sites funcionam. Hoje, transformo ideias em realidade através de linhas de código.</p>
+        <p>Meu dia a dia envolve uma combinação de criatividade e resolução de problemas. Desde o design da interface do
+            usuário até a arquitetura do back-end, eu trabalho para garantir que cada projeto seja executado com
+            perfeição.
+            Estou sempre atualizado com as últimas tendências e tecnologias da web para oferecer soluções modernas e
+            eficientes.</p>
+        <p>Um dos maiores prazeres do meu trabalho é a colaboração. Eu interajo com designers, gerentes de projeto e
+            outros
+            desenvolvedores para criar produtos que não só atendem às necessidades dos clientes, mas também surpreendem
+            e
+            encantam os usuários finais.</p>
+        <p>Embora os desafios sejam muitos — como resolver bugs complicados e cumprir prazos apertados — cada obstáculo
+            superado é uma oportunidade de aprendizado e crescimento. A flexibilidade do trabalho remoto me permite
+            equilibrar minha vida profissional e pessoal, mantendo a produtividade e a criatividade em alta.</p>
+        <p>Em resumo, ser um desenvolvedor web é mais do que uma profissão; é uma paixão. Amo transformar ideias em
+            soluções
+            digitais e estou sempre pronto para o próximo desafio.</p>
+    </section>
+    <section id="projects" class="projects-section">
+        <h2>Projetos</h2>
+        <div class="projects-grid">
+            <div class="project-card">Projeto 1</div>
+            <div class="project-card">Projeto 2</div>
+            <div class="project-card">Projeto 3</div>
+            <div class="project-card">Projeto 4</div>
+            <div class="project-card">Projeto 5</div>
+            <div class="project-card">Projeto 6</div>
+        </div>
+    </section>
+    <section id="contact" class="contact-section">
+        <h2>Contato</h2>
+        <form id="contactForm" onsubmit="return validateForm(event)" method="post">
+            <label for="name">Nome</label>
+            <input type="text" id="name" name="name" placeholder="Seu Nome">
+            <span class="error" id="nameError"></span>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Seu Email">
+            <span class="error" id="emailError"></span>
+
+            <label for="phone">Telefone</label>
+            <input type="text" id="phone" name="phone" maxlength="15" oninput="mascaraTelefone(this)"
+                placeholder="(99) 99999-9999" pattern="\(\d{2}\) \d{5}-\d{4}">
+            <span class="error" id="phoneError"></span>
+
+            <label for="message">Mensagem</label>
+            <textarea id="message" name="message" placeholder="Sua Mensagem"></textarea>
+            <span class="error" id="messageError"></span>
+
+            <div class="form-buttons">
+                <button type="submit">Enviar</button>
+                <button type="reset">Limpar</button>
+            </div>
+        </form>
+        <div class="success" id="successMessage"></div>
+
+    </section>
+    <footer>
+        <p>&copy; 2025 Meu Portfólio. Todos os direitos reservados.</p>
+        <div class="social-media">
+            <a href="#"><img src="img/github.png" alt="GitHub" title="GitHub"></a>
+            <a href="#"><img src="img/linkedin.png" alt="Linkedin" title="Linkedin"></a>
+        </div>
+    </footer>
+</body>
+
+</html>
